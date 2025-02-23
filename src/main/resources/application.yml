@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: ${ENV_ACTIVE_PROFILE:dev}
+    include:
+      - common
+      - gateway
+      - webclient
+  application:
+    name: ${ENV_APPLICATION_NAME:gateway}

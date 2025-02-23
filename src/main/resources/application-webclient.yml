@@ -1,0 +1,5 @@
+webclient:
+  config:
+    base-url: ${ENV_AUTH_SERVICE_WEBCLIENT_URL:http://localhost:8081/auth}
+    connect-timeout: ${ENV_WEBCLIENT_CONNECT_TIMEOUT:5000}
+    read-timeout: ${ENV_WEBCLIENT_READ_TIMEOUT:5000}
