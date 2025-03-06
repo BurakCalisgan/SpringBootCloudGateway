@@ -2,11 +2,19 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: auth-service-public
+          uri: ${ENV_AUTH_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=${ENV_AUTH_SERVICE_PUBLIC_PATH:/api/auth/authentication/**}
+          filters: []
+
         - id: auth-service
           uri: ${ENV_AUTH_SERVICE_URI:http://localhost:8081}
           predicates:
-            - Path=${ENV_AUTH_SERVICE_PATH:/api/auth/**}
-          filters: []
+            - Path=${ENV_AUTH_SERVICE_PATH:/api/auth/user-management/**, /api/auth/authorization/**}
+          filters:
+            - TokenValidationFilterFactory
+            - RoleValidationFilterFactory
 
         - id: payment-service
           uri: ${ENV_PAYMENT_SERVICE_URI:http://localhost:8082}
