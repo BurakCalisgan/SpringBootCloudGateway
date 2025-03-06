@@ -12,12 +12,13 @@ public class AuthClient {
 
     private final WebClient webClient;
 
-    public Mono<String> validateToken(String token) {
+    public Mono<Boolean> validateToken(String token) {
         return webClient.post()
                 .uri("/validate-token")
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .retrieve()
-                .bodyToMono(String.class);
+                .toBodilessEntity() // Body'yi almıyoruz, sadece status code ve headers'ı alıyoruz
+                .map(response -> response.getStatusCode().is2xxSuccessful()); // 2xx başarılı ise true, değilse false döner
     }
 
     public Mono<String> extractRole(String token) {

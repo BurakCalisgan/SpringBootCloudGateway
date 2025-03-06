@@ -38,7 +38,13 @@ public class TokenValidationFilterFactory extends AbstractGatewayFilterFactory<T
             String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
             return authClient.validateToken(token)
-                    .flatMap(response -> chain.filter(exchange))
+                    .flatMap(isValid -> {
+                        if (isValid) {
+                            return chain.filter(exchange);
+                        } else {
+                            return onError(exchange, "Invalid Token");
+                        }
+                    })
                     .onErrorResume(e -> onError(exchange, "Invalid Token"));
 
         }, 1); // TokenFilter önce çalışmalı, sonra RoleFilter çalışacak
