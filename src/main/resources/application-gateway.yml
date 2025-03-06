@@ -5,25 +5,35 @@ spring:
         - id: auth-service
           uri: ${ENV_AUTH_SERVICE_URI:http://localhost:8081}
           predicates:
-            - Path=${ENV_AUTH_SERVICE_PATH:/auth/**}
+            - Path=${ENV_AUTH_SERVICE_PATH:/api/auth/**}
+          filters: []
 
         - id: payment-service
           uri: ${ENV_PAYMENT_SERVICE_URI:http://localhost:8082}
           predicates:
-            - Path=${ENV_PAYMENT_SERVICE_PATH:/payment/**}
+            - Path=${ENV_PAYMENT_SERVICE_PATH:/api/payment/**}
+          filters:
+            - TokenValidationFilterFactory
+            - RoleValidationFilterFactory
           metadata:
             allowedRoles: ${ENV_PAYMENT_SERVICE_ROLES:["ADMIN", "MODERATOR", "USER"]}
 
         - id: customer-service
           uri: ${ENV_CUSTOMER_SERVICE_URI:http://localhost:8083}
           predicates:
-            - Path=${ENV_CUSTOMER_SERVICE_PATH:/customer/**}
+            - Path=${ENV_CUSTOMER_SERVICE_PATH:/api/customer/**}
+          filters:
+            - TokenValidationFilterFactory
+            - RoleValidationFilterFactory
           metadata:
             allowedRoles: ${ENV_CUSTOMER_SERVICE_ROLES:["ADMIN", "MODERATOR"]}
 
         - id: admin-service
           uri: ${ENV_ADMIN_SERVICE_URI:http://localhost:8084}
           predicates:
-            - Path=${ENV_ADMIN_SERVICE_PATH:/admin/**}
+            - Path=${ENV_ADMIN_SERVICE_PATH:/api/admin/**}
+          filters:
+            - TokenValidationFilterFactory
+            - RoleValidationFilterFactory
           metadata:
             allowedRoles: ${ENV_ADMIN_SERVICE_ROLES:["ADMIN"]}
