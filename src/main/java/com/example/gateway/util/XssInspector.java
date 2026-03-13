@@ -26,7 +26,6 @@ public class XssInspector {
     private static final String BODY_INSPECTION_ERROR = "Request body could not be inspected safely";
 
     private static final Pattern[] XSS_PATTERNS = {
-            Pattern.compile("<\\s*/?\\s*[a-z][a-z0-9:-]*\\b[^>]*>", Pattern.CASE_INSENSITIVE),
             Pattern.compile("<\\s*script", Pattern.CASE_INSENSITIVE),
             Pattern.compile("javascript\\s*:", Pattern.CASE_INSENSITIVE),
             Pattern.compile("vbscript\\s*:", Pattern.CASE_INSENSITIVE),

@@ -124,10 +124,24 @@ class XssInspectorTest {
                 .contentType(MediaType.TEXT_PLAIN)
                 .build();
 
-        byte[] body = "<div>unsafe html</div>".getBytes(StandardCharsets.UTF_8);
+        byte[] body = "<img src=x onerror=alert(1)>".getBytes(StandardCharsets.UTF_8);
 
         assertThat(xssInspector.detectViolation(request, body))
                 .contains("XSS payload detected in request body");
+    }
+
+    @Test
+    void shouldAllowHarmlessAngleBracketText() {
+        MockServerHttpRequest request = MockServerHttpRequest.post("/api/files")
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
+
+        byte[] body = """
+                {"content":"<burak>"}
+                """.getBytes(StandardCharsets.UTF_8);
+
+        assertThat(xssInspector.detectViolation(request, body))
+                .isEmpty();
     }
 
     @Test
