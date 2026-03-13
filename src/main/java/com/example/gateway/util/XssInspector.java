@@ -184,12 +184,12 @@ public class XssInspector {
         }
 
         String headers = normalizedPart.substring(0, headerEndIndex);
-        if (isFilePart(headers)) {
+        MediaType partContentType = resolvePartContentType(headers);
+        if (shouldSkipMultipartPart(headers, partContentType)) {
             return Optional.empty();
         }
 
         String partBody = normalizedPart.substring(headerEndIndex + 4);
-        MediaType partContentType = resolvePartContentType(headers);
         byte[] partBodyBytes = trimTrailingCrlf(partBody).getBytes(StandardCharsets.ISO_8859_1);
 
         if (isJson(partContentType)) {
@@ -208,6 +208,10 @@ public class XssInspector {
 
     private boolean isFilePart(String headers) {
         return headers.toLowerCase(Locale.ROOT).contains("filename=");
+    }
+
+    private boolean shouldSkipMultipartPart(String headers, MediaType partContentType) {
+        return isFilePart(headers) && !isJson(partContentType);
     }
 
     private MediaType resolvePartContentType(String headers) {

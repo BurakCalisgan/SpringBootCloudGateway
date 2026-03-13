@@ -129,4 +129,28 @@ class XssInspectorTest {
         assertThat(xssInspector.detectViolation(request, body))
                 .contains("XSS payload detected in request body");
     }
+
+    @Test
+    void shouldRejectJsonMultipartPartEvenWhenBrowserSendsBlobFilename() {
+        String boundary = "----WebKitFormBoundaryKB04XikZhPdKKApO";
+        String multipartBody =
+                "------WebKitFormBoundaryKB04XikZhPdKKApO\r\n" +
+                "Content-Disposition: form-data; name=\"request\"; filename=\"blob\"\r\n" +
+                "Content-Type: application/json\r\n" +
+                "\r\n" +
+                "{\"documentName\":\"<a href=\\\"javascript:alert(1)\\\">click</a>\",\"documentTypeId\":\"8dfc8ffe-f6db-4045-b91d-7bc1d0b20085\",\"decisionDate\":\"2026-03-13\",\"directorate\":\"YONETIM\",\"explanation\":\"safe\"}\r\n" +
+                "------WebKitFormBoundaryKB04XikZhPdKKApO\r\n" +
+                "Content-Disposition: form-data; name=\"file\"; filename=\"test.pdf\"\r\n" +
+                "Content-Type: application/pdf\r\n" +
+                "\r\n" +
+                "%PDF-1.4 fake\r\n" +
+                "------WebKitFormBoundaryKB04XikZhPdKKApO--\r\n";
+
+        MockServerHttpRequest request = MockServerHttpRequest.post("/api/v1/documents")
+                .contentType(MediaType.parseMediaType("multipart/form-data; boundary=" + boundary))
+                .build();
+
+        assertThat(xssInspector.detectViolation(request, multipartBody.getBytes(StandardCharsets.ISO_8859_1)))
+                .contains("XSS payload detected in multipart json part.documentName");
+    }
 }
